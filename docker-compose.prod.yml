@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../cs2-cases-backend
+      dockerfile: Dockerfile-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/cs2_cases_db
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ../cs2-cases-frontend
+      dockerfile: Dockerfile-prod
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:

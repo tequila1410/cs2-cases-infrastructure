@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../cs2-cases-backend
+      dockerfile: Dockerfile-dev
+    command: nodemon src/main.ts
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../cs2-cases-backend:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/cs2_cases_db
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+
+  # frontend:
+  #   build:
+  #     context: ../cs2-cases-frontend
+  #     dockerfile: Dockerfile-dev
+  #   ports:
+  #     - "4200:4200"
+  #   volumes:
+  #     - ../cs2-cases-frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   command: npm run start:docker
+  #   networks:
+  #     - app-network
+
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
